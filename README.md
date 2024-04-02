@@ -16,7 +16,7 @@ A recreation of the GTA Online collectible minigame "G's Cache". If you're not f
 
 **Notes**:
 
-* This requires game build 2372 (Tuners) and one sync infinity to use.
+* This requires game build 2372 (Tuners) or higher and one sync infinity to use.
 * The first package will spawn after CycleTimer minutes, from when the resource starts.
 
 ## Requirements
