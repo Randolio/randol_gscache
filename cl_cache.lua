@@ -7,6 +7,7 @@ local grabDict, grabAnim = 'anim@scripted@player@freemode@tun_prep_ig1_grab_low@
 
 function clearCacheHunt()
     if DoesBlipExist(gsCache.blip) then RemoveBlip(gsCache.blip) end
+    if DoesBlipExist(gsCache.blip2) then RemoveBlip(gsCache.blip2) end
     if gsCache.point then gsCache.point:remove() end
     delay = false
     startBeeps = false
@@ -19,12 +20,21 @@ function clearCacheHunt()
 end
 
 local function createRadius(coords)
-    local blip = AddBlipForRadius(coords.x + math.random(-100, 100), coords.y + math.random(-100, 100), coords .z, 250.0)
+    local offset = math.random(-100, 100)
+    local blip = AddBlipForRadius(coords.x + offset, coords.y + offset, coords.z, 250.0)
     SetBlipAlpha(blip, Config.Blip.alpha)
     SetBlipHighDetail(blip, true)
     SetBlipColour(blip, Config.Blip.color)
     SetBlipAsShortRange(blip, true)
-    return blip
+    local blip2 = AddBlipForCoord(coords.x + offset, coords.y + offset, coords.z)
+    SetBlipSprite(blip2, 478)
+    SetBlipScale(blip2, 1.0)
+    SetBlipColour(blip2, 7)
+    SetBlipAsShortRange(blip2, true)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName("G's Cache")
+    EndTextCommandSetBlipName(blip2)
+    return blip, blip2
 end
 
 local function grabCache()
@@ -33,7 +43,7 @@ local function grabCache()
         while not RequestScriptAudioBank('DLC_TUNER/DLC_Tuner_Collectibles', false, -1) do Wait(0) end
         lib.requestAnimDict(grabDict, 2000)
         TaskPlayAnim(cache.ped, grabDict, grabAnim, 8.0, -8.0, 1500, 01, 0.0, false, false, false)
-		RemoveAnimDict(grabDict)
+        RemoveAnimDict(grabDict)
         PlaySoundFrontend(-1, 'Audio_Player_Shard_Final', 'Tuner_Collectables_General_Sounds', false)
     end
     Wait(2000)
@@ -46,15 +56,16 @@ RegisterNetEvent('randol_cache:client:initHunt', function(coords)
     DoNotification(Config.DropNotify, 'success')
     PlaySoundFrontend(-1, "Text_Arrive_Tone", "Phone_SoundSet_Default", 1)
     gsCache.coords = coords
-    gsCache.blip = createRadius(gsCache.coords)
+    gsCache.blip, gsCache.blip2 = createRadius(gsCache.coords)
     gsCache.point = lib.points.new({ 
         coords = vec3(gsCache.coords.x, gsCache.coords.y, gsCache.coords.z), 
-        distance = 15.0,
+        distance = 30.0,
         onEnter = function()
+            if DoesBlipExist(gsCache.blip2) then RemoveBlip(gsCache.blip2) end
             startBeeps = true
             CreateThread(function()
                 while startBeeps do
-                    PlaySoundFromCoord(-1, 'CONFIRM_BEEP', gsCache.coords.x, gsCache.coords.y, gsCache.coords.z, 'HUD_MINI_GAME_SOUNDSET', 0, 15.0, 0)
+                    PlaySoundFromCoord(-1, 'CONFIRM_BEEP', gsCache.coords.x, gsCache.coords.y, gsCache.coords.z, 'HUD_MINI_GAME_SOUNDSET', 0, 30.0, 0)
                     Wait(3000)
                 end
             end)
