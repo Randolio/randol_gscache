@@ -4,7 +4,7 @@ return {
         AddMoney(player, 'cash', amount)
         DoNotification(src, ('You got $%s from G\'s Cache.'):format(amount))
     end,
-    Debug = true,
+    Debug = false,
     CycleTimer = 90, -- every 90 mins a new g's cache gets generated.
     Locations = {
         {coords = vec3(-3425.65991, 961.249023, 7.55314398), rot = vec3(-90,-49.9999809,0)},
